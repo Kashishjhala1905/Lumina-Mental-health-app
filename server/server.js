@@ -19,6 +19,7 @@ app.use(cors({
         "https://lumina-mental-health-9pbez5l7f-kashishjhala1905s-projects.vercel.app/",
         process.env.FRONTEND_URL
     ].filter(Boolean),
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
 

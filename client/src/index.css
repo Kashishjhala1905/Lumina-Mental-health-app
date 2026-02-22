@@ -2,17 +2,178 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ================= BASE ================= */
 @layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
-    font-family: 'Poppins', sans-serif;
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
+    font-family: "Poppins", sans-serif;
+  }
+
+  /* ================= DARK MODE GLOBAL ================= */
+
+  html.dark body {
+    background-color: #0b0f1a !important;
+    color: #ffffff !important;
+  }
+
+  /* Background overrides */
+  html.dark .bg-white {
+    background-color: #111827 !important;
+  }
+
+  html.dark .bg-background {
+    background-color: #0b0f1a !important;
+  }
+
+  html.dark .bg-card {
+    background-color: #111827 !important;
+  }
+
+  html.dark .bg-muted {
+    background-color: #1f2937 !important;
+  }
+
+  html.dark .bg-gray-50,
+  html.dark .bg-gray-100 {
+    background-color: #111827 !important;
+  }
+
+  /* Text overrides */
+  html.dark .text-black,
+  html.dark .text-gray-900,
+  html.dark .text-gray-800,
+  html.dark .text-gray-700,
+  html.dark .text-gray-600,
+  html.dark .text-slate-700,
+  html.dark .text-slate-600 {
+    color: #ffffff !important;
+  }
+
+  html.dark .text-gray-500,
+  html.dark .text-gray-400,
+  html.dark .text-slate-500,
+  html.dark .text-muted-foreground,
+  html.dark .text-foreground,
+  html.dark .text-card-foreground {
+    color: #e5e7eb !important;
+  }
+
+  /* Headings */
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4,
+  html.dark h5,
+  html.dark h6 {
+    color: #ffffff !important;
+  }
+
+  /* Paragraphs / general text */
+  html.dark p,
+  html.dark span,
+  html.dark li,
+  html.dark label {
+    color: #f3f4f6 !important;
+  }
+
+  /* Borders */
+  html.dark .border-border,
+  html.dark .border-gray-200,
+  html.dark .border-gray-300 {
+    border-color: #1f2937 !important;
+  }
+
+  /* Inputs */
+  html.dark input,
+  html.dark textarea,
+  html.dark select {
+    background-color: #111827 !important;
+    color: #ffffff !important;
+    border-color: #1f2937 !important;
+  }
+
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    color: #9ca3af !important;
+  }
+
+  /* Prevent pink/gradient from breaking */
+  html.dark .gradient-text {
+    color: transparent !important;
+  }
+
+  /* Improve scrollbars in dark */
+  html.dark {
+    color-scheme: dark;
+  }
+  /* ================= PREMIUM DARK CARD SYSTEM ================= */
+
+  /* Dark card background (deep dark, not grey) */
+  html.dark .bg-white,
+  html.dark .bg-card,
+  html.dark .bg-gray-50,
+  html.dark .bg-gray-100 {
+    background-color: #0f172a !important; /* deep navy dark */
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 16px !important;
+  }
+
+  /* White readable text inside cards */
+  html.dark .bg-white *,
+  html.dark .bg-card *,
+  html.dark .bg-gray-50 *,
+  html.dark .bg-gray-100 * {
+    color: #ffffff !important;
+  }
+
+  /* Premium shadow */
+  html.dark .shadow,
+  html.dark .shadow-md,
+  html.dark .shadow-lg,
+  html.dark .shadow-xl {
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(255, 255, 255, 0.03);
+  }
+
+  /* Hover grow effect */
+  html.dark .bg-white:hover,
+  html.dark .bg-card:hover,
+  html.dark .bg-gray-50:hover,
+  html.dark .bg-gray-100:hover {
+    transform: scale(1.03);
+    transition: all 0.3s ease;
+    box-shadow:
+      0 12px 35px rgba(0, 0, 0, 0.8),
+      0 0 20px rgba(168, 85, 247, 0.15);
+  }
+  /* ================= DARK MODE CARDS ONLY ================= */
+
+  html.dark .shadow,
+  html.dark .shadow-md,
+  html.dark .shadow-lg,
+  html.dark .shadow-xl {
+    background-color: #111827 !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+    transition: transform 0.3s ease;
+  }
+
+  html.dark .shadow:hover,
+  html.dark .shadow-md:hover,
+  html.dark .shadow-lg:hover,
+  html.dark .shadow-xl:hover {
+    transform: scale(1.03);
   }
 }
 
+/* ================= UTILITIES ================= */
 @layer utilities {
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
@@ -20,9 +181,21 @@
 
   .gradient-border {
     @apply border-2 border-transparent bg-clip-padding;
-    background-image: linear-gradient(#ffffff, #ffffff),
+    background-image:
+      linear-gradient(#ffffff, #ffffff),
       linear-gradient(135deg, #a855f7, #ec4899);
     background-origin: border-box;
     background-clip: padding-box, border-box;
   }
 }
+
+/* Smooth transitions everywhere */
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+ nav{
+  transform: none !important;
+ }

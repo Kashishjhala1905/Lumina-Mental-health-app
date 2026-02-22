@@ -38,7 +38,7 @@ export default function ChatbotComponent() {
 
             // Call backend API
             const response = await axios.post(
-                `${API_URL}/api/chatbot/message`,
+                `${VITE_API_URL}/api/chatbot/message`,
                 {
                     message: userMessage,
                     conversationHistory: conversationHistory

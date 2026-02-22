@@ -12,18 +12,30 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+// app.use(cors({
+//     origin: [
+//         "http://localhost:5173",
+//         "http://localhost:5174",
+//         "https://lumina-mental-health-9pbez5l7f-kashishjhala1905s-projects.vercel.app/",
+//         process.env.FRONTEND_URL
+//     ].filter(Boolean),
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true
+// }));
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "https://lumina-mental-health-9pbez5l7f-kashishjhala1905s-projects.vercel.app/",
-        process.env.FRONTEND_URL
-    ].filter(Boolean),
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
+  origin: [
+    "http://localhost:5173",
+    "https://lumina-mental-health-app.vercel.app/"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
 
-
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

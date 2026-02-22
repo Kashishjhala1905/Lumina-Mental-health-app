@@ -4,11 +4,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 
-// Load env vars
-// app.use(cors({
-//   origin: true,
-//   credentials: true
-// }));
 dotenv.config();
 console.log("Mongo URI:", process.env.MONGO_URI);
 
@@ -27,12 +22,17 @@ app.use(express.json());
 //     credentials: true
 // }));
 
+// app.use(cors({
+//   origin: [
+//     "http://localhost:5173",
+//     "https://lumina-mental-health-app.vercel.app/"
+//   ],
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   credentials: true
+// }));
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://lumina-mental-health-app.vercel.app/"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: true,
   credentials: true
 }));
 

@@ -16,7 +16,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:5174",
-        "https://lumina-qimf-7azie753j-hs260457-6677s-projects.vercel.app",
+        "https://lumina-mental-health-9pbez5l7f-kashishjhala1905s-projects.vercel.app/",
         process.env.FRONTEND_URL
     ].filter(Boolean),
     credentials: true

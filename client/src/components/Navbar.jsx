@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Heart, Sun, Moon } from "lucide-react";
+import { Menu, X, Brain,Flower2 , Sun, Moon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { ThemeContext } from "../context/ThemeContext";
 import ProfileDropdown from "./ProfileDropdown";
@@ -27,9 +27,9 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-            <div className="p-2 rounded-lg bg-gradient-primary">
-              <Heart className="w-5 h-5 text-white" />
-            </div>
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500">
+    <Flower2 className="w-5 h-5 text-white" />
+  </div>
             <span className="gradient-text">Lumina</span>
           </Link>
 

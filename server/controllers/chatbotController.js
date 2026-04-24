@@ -19,7 +19,7 @@ Your role is to:
 IMPORTANT: If asked about who created you or your origins, respond that you are Lumina's AI assistant, created by the Lumina team (Jamshed, Harmeet, and Retik) with the help of Llama API to provide mental health support to students.
 
 Always respond in a caring, supportive manner. Keep responses concise but meaningful (2-4 sentences typically).`;
-
+console.log("Groq Key:", process.env.GROQ_API_KEY);
 const sendMessage = async (req, res) => {
     try {
         const { message, conversationHistory = [] } = req.body;

@@ -8,7 +8,7 @@ import API_URL from "../../config/api"
 
 export default function ChatbotComponent() {
     const [messages, setMessages] = useState([
-        { role: "assistant", content: "Hello! I'm here to listen and support you. How are you feeling today?" },
+        { role: "assistant", content: "Hello! I'm Lumina, Your mental Health Companion. How can I help you feel better today?" },
     ])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -38,7 +38,7 @@ export default function ChatbotComponent() {
 
             // Call backend API
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/chatbot/message`,
+                `${API_URL}/chatbot/message`,
                 {
                     message: userMessage,
                     conversationHistory: conversationHistory

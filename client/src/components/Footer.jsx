@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Heart } from 'lucide-react'
+import { Flower2 } from 'lucide-react'
 
 export default function Footer() {
     return (
@@ -9,75 +9,83 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center gap-2 mb-4">
                             <div className="p-2 rounded-lg bg-gradient-primary">
-                                <Heart className="w-4 h-4 text-white" />
+                                <Flower2 className="w-4 h-4 text-white" />
                             </div>
                             <span className="font-bold gradient-text">Lumina</span>
                         </div>
-                        <p className="text-sm text-muted-foreground">Supporting your mental wellness journey</p>
+                        <p className="text-sm text-muted-foreground">
+                            Supporting your mental wellness journey
+                        </p>
                     </div>
+
                     <div>
                         <h3 className="font-semibold mb-4 text-foreground">Quick Links</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link to="/chatbot" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="/chatbot" className="text-muted-foreground">
                                     AI Chat
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/resources" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="/resources" className="text-muted-foreground">
                                     Resources
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/community" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="/community" className="text-muted-foreground">
                                     Community
                                 </Link>
                             </li>
                         </ul>
                     </div>
+
                     <div>
                         <h3 className="font-semibold mb-4 text-foreground">Support</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link to="/counseling" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="/counseling" className="text-muted-foreground">
                                     Get Counseling
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/emergency" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="/emergency" className="text-muted-foreground">
                                     Emergency Help
                                 </Link>
                             </li>
                             <li>
-                                <a href="mailto:help@lumina.com" className="text-muted-foreground hover:text-primary transition-colors">
+                                <a href="mailto:help@lumina.com" className="text-muted-foreground">
                                     Contact Us
                                 </a>
                             </li>
                         </ul>
                     </div>
+
                     <div>
                         <h3 className="font-semibold mb-4 text-foreground">Legal</h3>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="#" className="text-muted-foreground">
                                     Privacy Policy
                                 </Link>
                             </li>
                             <li>
-                                <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="#" className="text-muted-foreground">
                                     Terms of Service
                                 </Link>
                             </li>
                             <li>
-                                <Link to="#" className="text-muted-foreground hover:text-primary transition-colors">
+                                <Link to="#" className="text-muted-foreground">
                                     Cookie Policy
                                 </Link>
                             </li>
                         </ul>
                     </div>
                 </div>
+
                 <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
-                    <p>&copy; 2025 Lumina. All rights reserved. Supporting mental wellness for everyone.</p>
+                    <p>
+                        &copy; 2026 Lumina. All rights reserved. Supporting mental wellness for everyone.
+                    </p>
                 </div>
             </div>
         </footer>

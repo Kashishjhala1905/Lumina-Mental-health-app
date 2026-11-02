@@ -1,9 +1,6 @@
-const jwt = require("jsonwebtoken");
+// Kept for backward compatibility; token logic lives in ./authTokens.js
+const { signToken } = require('./authTokens');
 
-const generateToken = (id, role) => {
-    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-        expiresIn: "30d",
-    });
-};
+const generateToken = (id, role, rememberMe = false) => signToken({ _id: id, role }, rememberMe);
 
 module.exports = generateToken;

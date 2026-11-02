@@ -37,6 +37,25 @@
     background-color: #1f2937 !important;
   }
 
+  html.dark .bg-popover {
+    background-color: #111827 !important;
+  }
+
+  /* Translucent cards (bg-card/50, bg-card/80 …) used across the app: keep them deep navy in dark mode
+     instead of translucent white (which rendered as washed-out gray with low-contrast text). */
+  html.dark [class*="bg-card/"] {
+    background-color: rgba(15, 23, 42, 0.78) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  html.dark .text-popover-foreground {
+    color: #f3f4f6 !important;
+  }
+
+  html.dark .hover\:bg-accent:hover {
+    background-color: rgba(168, 85, 247, 0.15) !important;
+  }
+
   html.dark .bg-gray-50,
   html.dark .bg-gray-100 {
     background-color: #111827 !important;
@@ -199,3 +218,66 @@
  nav{
   transform: none !important;
  }
+
+/* ================= HERO HEADLINE SHINE =================
+   A soft white highlight sweeps slowly across the letters (≈1.6s), fades out, pauses (≈2.2s), repeats.
+   Usage: <h1 className="hero-shine" data-shine="exact heading text">…</h1>
+   The highlight lives on an overlay (::after) clipped to the glyphs, so the heading's own text,
+   colours, gradient, font and layout are untouched (no layout shift). */
+.hero-shine {
+  position: relative;
+}
+
+.hero-shine::after {
+  content: attr(data-shine);
+  content: attr(data-shine) / ""; /* decorative: browsers that support alt text won't announce it twice */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 46%,
+    rgba(255, 255, 255, 0.75) 50%,
+    rgba(255, 255, 255, 0.35) 54%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.45));
+  opacity: 0;
+  animation: hero-shine-sweep 3.8s ease-in-out 0.8s infinite;
+  will-change: background-position, opacity;
+}
+
+/* 100% → 0% moves the white band from off-left to off-right (left-to-right sweep) */
+@keyframes hero-shine-sweep {
+  0% { background-position: 100% 0; opacity: 0; }
+  6% { opacity: 1; }
+  36% { opacity: 1; }
+  42% { background-position: 0% 0; opacity: 0; }
+  100% { background-position: 0% 0; opacity: 0; } /* pause before the next sweep */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shine::after {
+    animation: none;
+    display: none;
+  }
+  .breath-orb {
+    transition: none;
+  }
+}
+
+/* Paced-breathing cue in the meditation player */
+.breath-orb {
+  transition: transform 0.35s linear;
+}

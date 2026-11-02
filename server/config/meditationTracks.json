@@ -1,0 +1,164 @@
+[
+  {
+    "slug": "guided-body-scan",
+    "title": "Bell-Guided Body Scan",
+    "category": "Guided Meditation",
+    "description": "A calm drone with bowl chimes marking each step of a body scan. Follow the on-screen prompts.",
+    "url": "/audio/meditation/guided-body-scan.aac",
+    "durationSeconds": 240,
+    "bytes": 2880017,
+    "guide": [
+      {
+        "at": 0,
+        "text": "Settle into a comfortable position and gently close your eyes."
+      },
+      {
+        "at": 20,
+        "text": "Bring your attention to your breath. Let it move naturally."
+      },
+      {
+        "at": 50,
+        "text": "Notice your feet and legs. Let them feel heavy and relaxed."
+      },
+      {
+        "at": 80,
+        "text": "Move your attention to your hips, belly and lower back."
+      },
+      {
+        "at": 110,
+        "text": "Notice your chest and shoulders rise and fall with each breath."
+      },
+      {
+        "at": 140,
+        "text": "Relax your arms and hands, all the way to your fingertips."
+      },
+      {
+        "at": 170,
+        "text": "Soften your jaw, your forehead and the muscles around your eyes."
+      },
+      {
+        "at": 200,
+        "text": "Now sense your whole body at once – calm and supported."
+      },
+      {
+        "at": 225,
+        "text": "When you are ready, slowly open your eyes and return."
+      }
+    ],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "deep-relaxation-tide",
+    "title": "Slow Tide Pad",
+    "category": "Deep Relaxation",
+    "description": "Slowly evolving warm chords that rise and fall like a calm tide.",
+    "url": "/audio/meditation/deep-relaxation-tide.aac",
+    "durationSeconds": 150,
+    "bytes": 1800011,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "sleep-night-drift",
+    "title": "Night Drift",
+    "category": "Sleep Music",
+    "description": "A low, soft drone with sparse distant notes that slowly fade – for winding down before sleep.",
+    "url": "/audio/meditation/sleep-night-drift.aac",
+    "durationSeconds": 180,
+    "bytes": 2160013,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "stress-relief-warm-release",
+    "title": "Warm Release",
+    "category": "Stress Relief",
+    "description": "A warm, open chord with a gentle, unhurried arpeggio to help your shoulders drop.",
+    "url": "/audio/meditation/stress-relief-warm-release.aac",
+    "durationSeconds": 150,
+    "bytes": 1800011,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "breathing-guide-4-6",
+    "title": "Breathing Guide 4·6",
+    "category": "Breathing Meditation",
+    "description": "Breathe in while the sound rises (4 seconds) and out while it falls (6 seconds). A soft chime marks each new breath.",
+    "url": "/audio/meditation/breathing-guide-4-6.aac",
+    "durationSeconds": 180,
+    "bytes": 2160013,
+    "guide": [],
+    "breathing": {
+      "inhale": 4,
+      "exhale": 6
+    },
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "mindfulness-singing-bowls",
+    "title": "Singing Bowl Awareness",
+    "category": "Mindfulness",
+    "description": "Quiet room tone with a singing bowl every 20 seconds – each bowl is a cue to return to the present moment.",
+    "url": "/audio/meditation/mindfulness-singing-bowls.aac",
+    "durationSeconds": 150,
+    "bytes": 1800011,
+    "guide": [
+      {
+        "at": 0,
+        "text": "Each bowl is a cue: notice your breath, then return gently to this moment."
+      }
+    ],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "focus-steady-brown-noise",
+    "title": "Steady Focus",
+    "category": "Focus and Concentration",
+    "description": "Even brown noise with a faint steady tone and no melody – masks distractions while you study or work. Loop it for longer sessions.",
+    "url": "/audio/meditation/focus-steady-brown-noise.aac",
+    "durationSeconds": 120,
+    "bytes": 1440008,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "nature-gentle-rain",
+    "title": "Gentle Rain",
+    "category": "Nature Sounds",
+    "description": "Soft synthetic rain: a steady shower with scattered drops. Loop it for longer listening.",
+    "url": "/audio/meditation/nature-gentle-rain.aac",
+    "durationSeconds": 120,
+    "bytes": 1440008,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  },
+  {
+    "slug": "nature-ocean-waves",
+    "title": "Ocean Waves",
+    "category": "Nature Sounds",
+    "description": "Slow synthetic waves rolling in and out every 8–12 seconds. Loop it for longer listening.",
+    "url": "/audio/meditation/nature-ocean-waves.aac",
+    "durationSeconds": 120,
+    "bytes": 1440008,
+    "guide": [],
+    "breathing": null,
+    "source": "Original audio synthesised for Lumina (client/tools/meditation-audio) – no third-party samples",
+    "license": "Original work of the Lumina project"
+  }
+]

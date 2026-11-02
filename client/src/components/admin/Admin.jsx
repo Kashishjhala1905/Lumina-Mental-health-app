@@ -3,8 +3,20 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Users, MessageCircle, Calendar, Trash2, AlertCircle } from "lucide-react"
-import api from '@/lib/api'
+import { Users, Calendar, Trash2, AlertCircle } from "lucide-react"
+import api, { errorMessage } from '@/lib/api'
+import { Notice, LoadingState } from "@/components/ui/notice"
+import { Select } from "@/components/ui/field"
+import { useAuth } from "@/context/AuthContext"
+import { VictimAnalytics, VictimCases, AuditLog } from "./VictimSupportAdmin"
+import EmailRemindersAdmin from "./EmailRemindersAdmin"
+import { CounsellorDirectoryAdmin, ModerationAdmin, FeedbackAdmin } from "./PlatformAdmin"
+
+const ROLE_OPTIONS = [
+    { value: 'user', label: 'Member' },
+    { value: 'counselor', label: 'Counselor' },
+    { value: 'admin', label: 'Admin' },
+]
 
 export default function AdminComponent() {
     const [stats, setStats] = useState({
@@ -18,6 +30,8 @@ export default function AdminComponent() {
     const [users, setUsers] = useState([])
     const [pendingCounselors, setPendingCounselors] = useState([])
     const [loading, setLoading] = useState(true)
+    const [message, setMessage] = useState({ type: '', text: '' })
+    const { user: me } = useAuth()
 
     useEffect(() => {
         fetchData()
@@ -37,7 +51,7 @@ export default function AdminComponent() {
             if (usersRes.data.success) setUsers(usersRes.data.data)
             if (pendRes.data.success) setPendingCounselors(pendRes.data.data)
         } catch (error) {
-            console.error("Failed to fetch admin data", error)
+            setMessage({ type: 'error', text: errorMessage(error, 'Failed to load admin data') })
         } finally {
             setLoading(false)
         }
@@ -54,8 +68,19 @@ export default function AdminComponent() {
                 if (statsRes.data.success) setStats(statsRes.data.data)
             }
         } catch (error) {
-            console.error("Failed to delete user", error)
-            alert("Failed to delete user")
+            setMessage({ type: 'error', text: errorMessage(error, 'Failed to delete user') })
+        }
+    }
+
+    const handleRoleChange = async (u, role) => {
+        if (role === (u.role === 'student' ? 'user' : u.role)) return
+        if (!window.confirm(`Change ${u.name}'s role to ${role}? They will need to sign in again.`)) return
+        try {
+            const { data } = await api.patch(`/admin/users/${u._id}/role`, { role })
+            setMessage({ type: 'success', text: data.message })
+            fetchData()
+        } catch (error) {
+            setMessage({ type: 'error', text: errorMessage(error, 'Failed to change role') })
         }
     }
 
@@ -67,40 +92,40 @@ export default function AdminComponent() {
                 setPendingCounselors(pendingCounselors.filter(c => c._id !== id))
                 // Refresh data to update stats and user list
                 fetchData()
-                alert("Counselor approved successfully")
+                setMessage({ type: 'success', text: 'Counselor approved successfully' })
             }
         } catch (error) {
-            console.error("Failed to approve counselor", error)
-            alert("Failed to approve counselor")
+            setMessage({ type: 'error', text: errorMessage(error, 'Failed to approve counselor') })
         }
     }
 
     const handleRejectCounselor = async (id) => {
-        if (!window.confirm("Are you sure you want to reject/delete this request?")) return
+        if (!window.confirm("Reject this counselor application? The account remains a regular member account.")) return
         try {
             const { data } = await api.delete(`/admin/reject-counselor/${id}`)
             if (data.success) {
                 setPendingCounselors(pendingCounselors.filter(c => c._id !== id))
                 fetchData()
+                setMessage({ type: 'success', text: 'Counselor application rejected' })
             }
         } catch (error) {
-            console.error("Failed to reject counselor", error)
-            alert("Failed to reject counselor")
+            setMessage({ type: 'error', text: errorMessage(error, 'Failed to reject counselor') })
         }
     }
 
     const statCards = [
-        { icon: Users, label: "Total Students", value: stats.students, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { icon: Users, label: "Total Members", value: stats.users ?? stats.students, color: "text-blue-500", bg: "bg-blue-500/10" },
         { icon: Users, label: "Total Counselors", value: stats.counselors, color: "text-green-500", bg: "bg-green-500/10" },
         { icon: Calendar, label: "Total Appointments", value: stats.appointments, color: "text-purple-500", bg: "bg-purple-500/10" },
         { icon: AlertCircle, label: "Pending Requests", value: stats.pending, color: "text-yellow-500", bg: "bg-yellow-500/10" },
         { icon: Users, label: "Counselor Applications", value: stats.pendingCounselors, color: "text-orange-500", bg: "bg-orange-500/10" },
     ]
 
-    if (loading) return <div className="p-8 text-center animate-pulse">Loading admin dashboard...</div>
+    if (loading) return <LoadingState label="Loading admin dashboard..." />
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+            {message.text && <Notice type={message.type}>{message.text} <button className="underline ml-2" onClick={() => setMessage({ type: '', text: '' })}>Dismiss</button></Notice>}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((stat, i) => {
                     const Icon = stat.icon
@@ -121,7 +146,7 @@ export default function AdminComponent() {
             </div>
 
             <Tabs defaultValue="appointments" className="w-full">
-                <TabsList className="mb-4">
+                <TabsList className="mb-4 flex-wrap h-auto">
                     <TabsTrigger value="appointments">Appointments</TabsTrigger>
                     <TabsTrigger value="requests" className="relative">
                         Counselor Requests
@@ -132,7 +157,22 @@ export default function AdminComponent() {
                         )}
                     </TabsTrigger>
                     <TabsTrigger value="users">Manage Users</TabsTrigger>
+                    <TabsTrigger value="vs-analytics">Victim Support Analytics</TabsTrigger>
+                    <TabsTrigger value="vs-cases">Case Assignment</TabsTrigger>
+                    <TabsTrigger value="audit">Audit Log</TabsTrigger>
+                    <TabsTrigger value="email">Email & Reminders</TabsTrigger>
+                    <TabsTrigger value="directory">Counsellor Directory</TabsTrigger>
+                    <TabsTrigger value="moderation">Community Moderation</TabsTrigger>
+                    <TabsTrigger value="feedback">Feedback</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="vs-analytics"><VictimAnalytics /></TabsContent>
+                <TabsContent value="vs-cases"><VictimCases /></TabsContent>
+                <TabsContent value="audit"><AuditLog /></TabsContent>
+                <TabsContent value="email"><EmailRemindersAdmin /></TabsContent>
+                <TabsContent value="directory"><CounsellorDirectoryAdmin /></TabsContent>
+                <TabsContent value="moderation"><ModerationAdmin /></TabsContent>
+                <TabsContent value="feedback"><FeedbackAdmin /></TabsContent>
 
                 <TabsContent value="requests">
                     <Card className="border-border bg-card/50 backdrop-blur overflow-hidden">
@@ -145,6 +185,7 @@ export default function AdminComponent() {
                                     <TableRow className="hover:bg-transparent border-border">
                                         <TableHead>Name</TableHead>
                                         <TableHead>Email</TableHead>
+                                        <TableHead>Username</TableHead>
                                         <TableHead>Speciality</TableHead>
                                         <TableHead>Credentials</TableHead>
                                         <TableHead>Actions</TableHead>
@@ -155,11 +196,16 @@ export default function AdminComponent() {
                                         <TableRow key={c._id} className="border-border hover:bg-muted/50">
                                             <TableCell className="font-medium">{c.name}</TableCell>
                                             <TableCell>{c.email}</TableCell>
+                                            <TableCell>{c.username ? `@${c.username}` : '—'}</TableCell>
                                             <TableCell>{c.speciality}</TableCell>
                                             <TableCell>
-                                                <a href={c.credentials} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate max-w-[200px] block">
-                                                    {c.credentials}
-                                                </a>
+                                                {/^https?:\/\//i.test(c.credentials || '') ? (
+                                                    <a href={c.credentials} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate max-w-[200px] block">
+                                                        {c.credentials}
+                                                    </a>
+                                                ) : (
+                                                    <span className="truncate max-w-[200px] block">{c.credentials}</span>
+                                                )}
                                             </TableCell>
                                             <TableCell className="flex gap-2">
                                                 <Button
@@ -174,14 +220,14 @@ export default function AdminComponent() {
                                                     variant="destructive"
                                                     onClick={() => handleRejectCounselor(c._id)}
                                                 >
-                                                    Ignore
+                                                    Reject
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                     {pendingCounselors.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={5} className="text-center text-muted-foreground h-24">
+                                            <TableCell colSpan={6} className="text-center text-muted-foreground h-24">
                                                 No pending counselor requests.
                                             </TableCell>
                                         </TableRow>
@@ -201,7 +247,7 @@ export default function AdminComponent() {
                             <Table>
                                 <TableHeader>
                                     <TableRow className="hover:bg-transparent border-border">
-                                        <TableHead>Student</TableHead>
+                                        <TableHead>Member</TableHead>
                                         <TableHead>Counselor</TableHead>
                                         <TableHead>Date</TableHead>
                                         <TableHead>Time</TableHead>
@@ -265,9 +311,17 @@ export default function AdminComponent() {
                                 <TableBody>
                                     {users.map((u) => (
                                         <TableRow key={u._id} className="border-border hover:bg-muted/50">
-                                            <TableCell className="font-medium">{u.name}</TableCell>
+                                            <TableCell className="font-medium">{u.name}{u.username && <span className="block text-xs text-muted-foreground">@{u.username}</span>}</TableCell>
                                             <TableCell>{u.email}</TableCell>
-                                            <TableCell className="capitalize">{u.role}</TableCell>
+                                            <TableCell>
+                                                {u._id === me?._id ? (
+                                                    <span className="capitalize">{u.role} (you)</span>
+                                                ) : (
+                                                    <Select className="h-9 w-36" value={u.role === 'student' ? 'user' : u.role} onChange={(e) => handleRoleChange(u, e.target.value)} aria-label={`Role for ${u.name}`}>
+                                                        {ROLE_OPTIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                                    </Select>
+                                                )}
+                                            </TableCell>
                                             <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
                                             <TableCell>
                                                 {u.role !== 'admin' && (

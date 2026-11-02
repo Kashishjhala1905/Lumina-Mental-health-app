@@ -1,0 +1,57 @@
+{
+  "ruleVersion": "2.0.0",
+  "disclaimer": "Prototype monitoring indicator for human-led support coordination. It is not a clinically validated diagnostic or prediction tool.",
+  "scale": { "min": 1, "max": 5 },
+  "factors": {
+    "emotionalState": { "label": "Low emotional state", "direction": "lowerIsWorse", "pointsPerStep": 4 },
+    "stressLevel": { "label": "Elevated stress", "direction": "higherIsWorse", "pointsPerStep": 4 },
+    "anxietyLevel": { "label": "Elevated anxiety", "direction": "higherIsWorse", "pointsPerStep": 4 },
+    "sleepQuality": { "label": "Poor sleep quality", "direction": "lowerIsWorse", "pointsPerStep": 3 },
+    "dailyFunctioning": { "label": "Difficulty with daily functioning", "direction": "lowerIsWorse", "pointsPerStep": 3 },
+    "socialSupport": { "label": "Limited social/emotional support", "points": { "none": 8, "some": 3 } },
+    "safetyConcern": { "label": "Personal safety concern", "points": { "somewhat_unsafe": 12, "unsafe": 25 } },
+    "needsProfessionalHelp": { "label": "Expressed need for professional help", "points": { "yes": 6, "unsure": 3 } },
+    "requestCounselorContact": { "label": "Requested counselor contact", "points": 4 }
+  },
+  "longitudinal": {
+    "lookback": 3,
+    "stableBand": 5,
+    "deteriorationDelta": 15,
+    "deteriorationPoints": 8,
+    "sustainedCategories": ["High Concern", "Urgent Support Needed"],
+    "sustainedCount": 2,
+    "sustainedPoints": 5
+  },
+  "categories": [
+    { "name": "Low Concern", "min": 0 },
+    { "name": "Moderate Concern", "min": 25 },
+    { "name": "High Concern", "min": 50 },
+    { "name": "Urgent Support Needed", "min": 70 }
+  ],
+  "overrides": [
+    { "id": "serious_safety_concern", "field": "safetyConcern", "equals": "unsafe", "minimumCategory": "Urgent Support Needed", "reason": "Reported feeling unsafe – always treated as Urgent Support Needed" },
+    { "id": "some_safety_concern", "field": "safetyConcern", "equals": "somewhat_unsafe", "minimumCategory": "Moderate Concern", "reason": "Reported feeling somewhat unsafe – at least Moderate Concern" },
+    { "id": "crisis_language", "field": "crisisLanguageDetected", "equals": true, "minimumCategory": "High Concern", "reason": "Crisis-related wording found in the optional comment (rule-based phrase match) – at least High Concern" }
+  ],
+  "recommendedActions": {
+    "Low Concern": "Keep up regular check-ins and the self-care tools in Resources. You can request counselor contact at any time.",
+    "Moderate Concern": "Consider speaking with a counselor. Grounding and breathing exercises in Resources may help in the meantime.",
+    "High Concern": "A trained counselor should review this check-in. Please consider booking a counseling session soon and keep the support helplines handy.",
+    "Urgent Support Needed": "If you are in immediate danger, call 112 now. Please use the urgent support helplines below while a counselor reviews this check-in."
+  },
+  "alerts": {
+    "categoryThreshold": "High Concern",
+    "deterioration": true,
+    "counselorRequest": true,
+    "safetyConcernValues": ["unsafe", "somewhat_unsafe"],
+    "crisisLanguage": true,
+    "aiHumanReview": { "enabled": true, "minConfidence": "high" }
+  },
+  "crisisPhrases": [
+    "kill myself", "killing myself", "end my life", "ending my life", "take my own life", "suicide", "suicidal",
+    "want to die", "wish i was dead", "wish i were dead", "better off dead", "no reason to live", "can't go on",
+    "cannot go on", "hurt myself", "harm myself", "self harm", "self-harm", "cut myself",
+    "going to kill me", "threatened to kill", "threatening to kill", "they will kill me", "not safe at home",
+    "being followed", "afraid for my life", "fear for my life"
+  ]
+}

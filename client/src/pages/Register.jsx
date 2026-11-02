@@ -1,50 +1,92 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import api from '@/lib/api'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import BrandLogo from '@/components/BrandLogo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { User, Shield, GraduationCap } from 'lucide-react'
+import { Field } from '@/components/ui/field'
+import { Notice } from '@/components/ui/notice'
+import { PasswordInput, PasswordStrength } from '@/components/ui/password-input'
+import { passwordChecks } from '@/lib/password'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { User, Stethoscope } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { errorMessage, fieldErrors } from '@/lib/api'
+import { homeFor } from '@/lib/roles'
+
+const USERNAME_RE = /^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])$/
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+function validate(form, applyAsCounselor) {
+    const errors = {}
+    const username = form.username.trim().toLowerCase()
+    if (form.name.trim().length < 2) errors.name = 'Please enter your full name'
+    if (!username) errors.username = 'Username is required'
+    else if (!USERNAME_RE.test(username)) errors.username = '3-30 characters: letters, numbers, dots, dashes or underscores'
+    if (!EMAIL_RE.test(form.email.trim())) errors.email = 'Please enter a valid email address'
+    if (passwordChecks(form.password).some((c) => !c.ok)) errors.password = 'Password does not meet the requirements below'
+    if (!form.confirmPassword) errors.confirmPassword = 'Please confirm your password'
+    else if (form.password !== form.confirmPassword) errors.confirmPassword = 'Passwords do not match'
+    if (applyAsCounselor) {
+        if (!form.speciality.trim()) errors.speciality = 'Speciality is required'
+        if (!form.credentials.trim()) errors.credentials = 'Proof of credentials is required'
+    }
+    return errors
+}
 
 export default function Register() {
-    // Default to 'student' role
-    const [role, setRole] = useState('student')
+    const [accountType, setAccountType] = useState('member')
     const [formData, setFormData] = useState({
         name: '',
+        username: '',
         email: '',
         password: '',
+        confirmPassword: '',
         speciality: '',
-        credentials: ''
+        credentials: '',
     })
+    const [errors, setErrors] = useState({})
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+    const { user, register } = useAuth()
+    const navigate = useNavigate()
+    const applyAsCounselor = accountType === 'counselor'
+
+    if (user) return <Navigate to={homeFor(user)} replace />
 
     const handleRegister = async (e) => {
         e.preventDefault()
+        setError('')
+        const clientErrors = validate(formData, applyAsCounselor)
+        setErrors(clientErrors)
+        if (Object.keys(clientErrors).length) {
+            setError('Please fix the highlighted fields')
+            return
+        }
+        setLoading(true)
         try {
-            // Include role in registration data
-            const { data } = await api.post('/auth/register', { ...formData, role });
-            if (data.success) {
-                if (role === 'counselor') {
-                    alert('Registration successful! Your account is pending approval. You can login now, but features will be limited until an admin approves your credentials.');
-                    window.location.href = '/login';
-                } else {
-                    localStorage.setItem('user', JSON.stringify({
-                        ...data,
-                        token: data.token
-                    }));
-                    alert(`Registration successful! Welcome ${data.name}`);
-                    window.location.href = '/';
-                }
+            const payload = {
+                name: formData.name.trim(),
+                username: formData.username.trim().toLowerCase(),
+                email: formData.email.trim().toLowerCase(),
+                password: formData.password,
+                confirmPassword: formData.confirmPassword,
+                applyAsCounselor,
+                ...(applyAsCounselor ? { speciality: formData.speciality.trim(), credentials: formData.credentials.trim() } : {}),
             }
-        } catch (error) {
-            console.error('Registration error:', error);
-            const message = error.response?.data?.message || 'Registration failed';
-            alert(message);
+            const { user: created } = await register(payload)
+            navigate(homeFor(created), { replace: true, state: applyAsCounselor ? { notice: 'Your counselor application has been submitted and is pending administrator review.' } : undefined })
+        } catch (err) {
+            setErrors(fieldErrors(err))
+            setError(errorMessage(err, 'Registration failed'))
+        } finally {
+            setLoading(false)
         }
     }
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
+        if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: undefined })
     }
 
     return (
@@ -55,109 +97,67 @@ export default function Register() {
                 <div className="absolute bottom-20 right-10 w-72 h-72 bg-secondary/20 rounded-full blur-[100px] animate-pulse delay-1000" />
             </div>
 
-            <Card className="w-full max-w-md border-border bg-card/80 backdrop-blur-md shadow-xl">
+            <Card className="w-full max-w-md border-border bg-card/80 backdrop-blur-md">
                 <CardHeader className="text-center space-y-2">
+                    <Link to="/" className="mx-auto flex flex-col items-center gap-1.5" aria-label="Lumina home">
+                        <BrandLogo size="lg" alt="" />
+                        <span className="text-sm font-bold gradient-text">Lumina</span>
+                    </Link>
                     <CardTitle className="text-2xl font-bold gradient-text">Create Account</CardTitle>
                     <CardDescription>
                         Join Lumina to start your journey
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="student" className="w-full" onValueChange={(value) => setRole(value)}>
-                        <TabsList className="grid w-full grid-cols-3 mb-6">
-                            <TabsTrigger value="student" className="flex items-center gap-2">
-                                <GraduationCap className="w-4 h-4" /> Student
+                    <Tabs value={accountType} className="w-full" onValueChange={setAccountType}>
+                        <TabsList className="grid w-full grid-cols-2 mb-6">
+                            <TabsTrigger value="member" className="flex items-center gap-2">
+                                <User className="w-4 h-4" /> Member
                             </TabsTrigger>
                             <TabsTrigger value="counselor" className="flex items-center gap-2">
-                                <User className="w-4 h-4" /> Counselor
-                            </TabsTrigger>
-                            <TabsTrigger value="admin" className="flex items-center gap-2">
-                                <Shield className="w-4 h-4" /> Admin
+                                <Stethoscope className="w-4 h-4" /> Counselor
                             </TabsTrigger>
                         </TabsList>
-
-                        <form onSubmit={handleRegister} className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="name">
-                                    Full Name
-                                </label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    placeholder="John Doe"
-                                    required
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
-                                    Email
-                                </label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="password">
-                                    Password
-                                </label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            {role === 'counselor' && (
-                                <>
-                                    <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <label className="text-sm font-medium leading-none" htmlFor="speciality">
-                                            Speciality
-                                        </label>
-                                        <Input
-                                            id="speciality"
-                                            name="speciality"
-                                            placeholder="e.g. Anxiety, Depression, Academic Stress"
-                                            required={role === 'counselor'}
-                                            value={formData.speciality}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                    <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <label className="text-sm font-medium leading-none" htmlFor="credentials">
-                                            Proof of Credibility
-                                        </label>
-                                        <Input
-                                            id="credentials"
-                                            name="credentials"
-                                            placeholder="License No. or LinkedIn URL"
-                                            required={role === 'counselor'}
-                                            value={formData.credentials}
-                                            onChange={handleChange}
-                                        />
-                                        <p className="text-xs text-muted-foreground">
-                                            Your account will be pending approval by an administrator.
-                                        </p>
-                                    </div>
-                                </>
-                            )}
-
-                            <Button type="submit" className="w-full bg-gradient-primary text-white shadow-lg hover:shadow-xl transition-all duration-300">
-                                Sign Up as {role.charAt(0).toUpperCase() + role.slice(1)}
-                            </Button>
-                        </form>
                     </Tabs>
+
+                    <form onSubmit={handleRegister} className="space-y-4" noValidate>
+                        {error && <Notice type="error">{error}</Notice>}
+
+                        <Field id="name" label="Full Name" required error={errors.name}>
+                            <Input name="name" type="text" autoComplete="name" placeholder="John Doe" value={formData.name} onChange={handleChange} />
+                        </Field>
+                        <Field id="username" label="Username / User ID" required error={errors.username} hint="Used to sign in. Letters, numbers, dots, dashes or underscores.">
+                            <Input name="username" type="text" autoComplete="username" placeholder="john_doe" value={formData.username} onChange={handleChange} />
+                        </Field>
+                        <Field id="email" label="Email Address" required error={errors.email}>
+                            <Input name="email" type="email" autoComplete="email" placeholder="name@example.com" value={formData.email} onChange={handleChange} />
+                        </Field>
+                        <Field id="password" label="Password" required error={errors.password}>
+                            <PasswordInput name="password" autoComplete="new-password" value={formData.password} onChange={handleChange} />
+                        </Field>
+                        <PasswordStrength password={formData.password} />
+                        <Field id="confirmPassword" label="Confirm Password" required error={errors.confirmPassword}>
+                            <PasswordInput name="confirmPassword" autoComplete="new-password" value={formData.confirmPassword} onChange={handleChange} />
+                        </Field>
+
+                        {applyAsCounselor && (
+                            <>
+                                <Field id="speciality" label="Speciality" required error={errors.speciality}>
+                                    <Input name="speciality" placeholder="e.g. Trauma, Anxiety, Grief" value={formData.speciality} onChange={handleChange} />
+                                </Field>
+                                <Field id="credentials" label="Proof of Credibility" required error={errors.credentials}>
+                                    <Input name="credentials" placeholder="License No. or LinkedIn URL" value={formData.credentials} onChange={handleChange} />
+                                </Field>
+                                <p className="text-xs text-muted-foreground">
+                                    Your account is created as a regular member. Counselor tools unlock only after an administrator verifies and approves your application.
+                                </p>
+                            </>
+                        )}
+
+                        <Button type="submit" disabled={loading} className="w-full bg-gradient-primary text-white transition-all duration-300">
+                            {loading ? 'Creating account...' : applyAsCounselor ? 'Sign Up & Apply as Counselor' : 'Sign Up'}
+                        </Button>
+                    </form>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4 text-center text-sm text-muted-foreground">
                     <div>

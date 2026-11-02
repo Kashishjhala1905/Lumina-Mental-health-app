@@ -19,7 +19,10 @@ export default function Hero() {
           </span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+        <h1
+          className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight hero-shine"
+          data-shine="Prioritize Your, Mental Wellbeing"
+        >
           Prioritize Your,{" "}
           <span className="gradient-text">Mental Wellbeing</span>
         </h1>

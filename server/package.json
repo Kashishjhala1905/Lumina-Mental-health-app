@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
+    "test:unit": "node --test tests/scoring.test.js",
+    "test:groq": "node tests/groq.live.js",
+    "seed": "node scripts/seedDemo.js",
+    "email:test": "node scripts/emailTest.js",
+    "reminders:run": "node scripts/runReminders.js"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +20,18 @@
   "dependencies": {
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
-    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.3.0",
+    "howler": "^2.2.4",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.0.0",
-    "mongoose": "^9.0.1"
+    "mongoose": "^9.0.1",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^7.0.13",
+    "socket.io": "^4.8.3"
   }
 }

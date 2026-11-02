@@ -26,6 +26,15 @@ export default {
           DEFAULT: "#f3e8ff",
           foreground: "#a855f7",
         },
+        // Used by existing alert / dropdown markup (previously undefined, so it rendered unstyled)
+        destructive: {
+          DEFAULT: "#ef4444",
+          foreground: "#ffffff",
+        },
+        popover: {
+          DEFAULT: "#ffffff",
+          foreground: "#0f172a",
+        },
         border: "#e2e8f0",
         input: "#e2e8f0",
         ring: "#a855f7",

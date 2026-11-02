@@ -5,7 +5,7 @@ import { Phone, AlertCircle, BookOpen, ExternalLink } from "lucide-react"
 export default function EmergencyComponent() {
     const hotlines = [
         { name: "Jeevan Aastha Helpline (Suicide & Emotional Distress)", number: "1800-233-3330", available: "24/7" },
-        { name: "Tele-MANAS — National Mental Health Helpline", text: "Text HOME to 14416", available: "24/7" },
+        { name: "Tele-MANAS — National Mental Health Helpline", text: "Call 14416 or 1-800-891-4416", available: "24/7" },
         {
             name: "International Association for Suicide Prevention",
             number: "Visit https://findahelpline.com/countries/in/topics/suicidal-thoughts",
@@ -52,9 +52,11 @@ export default function EmergencyComponent() {
                             Please call emergency services (112 in India) or go to your nearest emergency room immediately.
                         </p>
                     </div>
-                    <Button size="lg" className="bg-destructive hover:bg-destructive/90 text-white gap-2 shadow-lg shadow-destructive/20 w-full md:w-auto">
-                        <Phone className="w-5 h-5" />
-                        Call Emergency Services
+                    <Button asChild size="lg" className="bg-destructive hover:bg-destructive/90 text-white gap-2 shadow-lg shadow-destructive/20 w-full md:w-auto">
+                        <a href="tel:112">
+                            <Phone className="w-5 h-5" />
+                            Call Emergency Services (112)
+                        </a>
                     </Button>
                 </div>
             </Card>

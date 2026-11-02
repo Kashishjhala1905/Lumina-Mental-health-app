@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Flower2 } from 'lucide-react'
+import BrandLogo from "./BrandLogo";
 
 export default function Footer() {
     return (
@@ -8,9 +8,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="p-2 rounded-lg bg-gradient-primary">
-                                <Flower2 className="w-4 h-4 text-white" />
-                            </div>
+                            <BrandLogo size="sm" alt="" />
                             <span className="font-bold gradient-text">Lumina</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -50,6 +48,11 @@ export default function Footer() {
                             <li>
                                 <Link to="/emergency" className="text-muted-foreground">
                                     Emergency Help
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/feedback" className="text-muted-foreground">
+                                    Share Feedback
                                 </Link>
                             </li>
                             <li>

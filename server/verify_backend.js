@@ -1,133 +1,32 @@
-const axios = require('axios');
+// Quick smoke check against a RUNNING backend (the full suite is `npm test`).
+// Usage: node verify_backend.js [baseUrl]   e.g. node verify_backend.js http://localhost:5003
+const BASE = (process.argv[2] || `http://localhost:${process.env.PORT || 5000}`).replace(/\/+$/, '');
 
-const API_URL = 'http://localhost:5000/api';
+(async () => {
+    let cookie = '';
+    const call = async (method, path, body) => {
+        const res = await fetch(BASE + path, {
+            method,
+            headers: { 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}) },
+            body: body ? JSON.stringify(body) : undefined,
+        });
+        const set = res.headers.getSetCookie().find((c) => c.startsWith('lumina_token='));
+        if (set) cookie = set.split(';')[0];
+        return { status: res.status, data: await res.json().catch(() => null) };
+    };
+    const check = (label, ok) => { console.log(`${ok ? '✅' : '❌'} ${label}`); if (!ok) process.exitCode = 1; };
 
-const runVerification = async () => {
-    try {
-        console.log('--- Starting Backend Verification ---');
-
-        // 1. Health Check
-        try {
-            const healthRes = await axios.get('http://localhost:5000/');
-            console.log('✅ Health Check Passed:', healthRes.data);
-        } catch (error) {
-            console.error('❌ Health Check Failed:', error.message);
-            process.exit(1);
-        }
-
-        // Helper to generate random user
-        const rand = Math.floor(Math.random() * 10000);
-        const studentData = {
-            name: `Student ${rand}`,
-            email: `student${rand}@test.com`,
-            password: 'password123',
-            role: 'student'
-        };
-        const counselorData = {
-            name: `Counselor ${rand}`,
-            email: `counselor${rand}@test.com`,
-            password: 'password123',
-            role: 'counselor'
-        };
-
-        let studentToken = '';
-        let counselorToken = '';
-        let counselorId = '';
-
-        // 2. Register Student
-        try {
-            const res = await axios.post(`${API_URL}/auth/register`, studentData);
-            studentToken = res.data.token;
-            console.log('✅ Student Registration Passed');
-        } catch (error) {
-            console.error('❌ Student Registration Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 3. Login Student
-        try {
-            const res = await axios.post(`${API_URL}/auth/login`, { email: studentData.email, password: studentData.password });
-            if (res.data.token) console.log('✅ Student Login Passed');
-        } catch (error) {
-            console.error('❌ Student Login Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 4. Register Counselor
-        try {
-            const res = await axios.post(`${API_URL}/auth/register`, counselorData);
-            counselorToken = res.data.token;
-            counselorId = res.data._id;
-            console.log('✅ Counselor Registration Passed');
-        } catch (error) {
-            console.error('❌ Counselor Registration Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 5. Login Counselor (Verify)
-        try {
-            const res = await axios.post(`${API_URL}/auth/login`, { email: counselorData.email, password: counselorData.password });
-            if (res.data.token) console.log('✅ Counselor Login Passed');
-        } catch (error) {
-            console.error('❌ Counselor Login Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 6. Book Appointment (Student)
-        let appointmentId = '';
-        try {
-            const res = await axios.post(
-                `${API_URL}/appointment/book`,
-                {
-                    counselorId: counselorId,
-                    date: '2024-12-25',
-                    time: '10:00 AM',
-                    concern: 'Academic stress'
-                },
-                { headers: { Authorization: `Bearer ${studentToken}` } }
-            );
-            appointmentId = res.data._id;
-            console.log('✅ Book Appointment Passed');
-        } catch (error) {
-            console.error('❌ Book Appointment Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 7. Get My Appointments (Student)
-        try {
-            const res = await axios.get(
-                `${API_URL}/appointment/my`,
-                { headers: { Authorization: `Bearer ${studentToken}` } }
-            );
-            if (res.data.length > 0) console.log('✅ Get Student Appointments Passed');
-            else console.warn('⚠️ Student has no appointments (Unexpected)');
-        } catch (error) {
-            console.error('❌ Get Student Appointments Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 8. Get Counselor Appointments
-        try {
-            const res = await axios.get(
-                `${API_URL}/appointment/counselor`,
-                { headers: { Authorization: `Bearer ${counselorToken}` } }
-            );
-            if (res.data.length > 0) console.log('✅ Get Counselor Appointments Passed');
-            else console.warn('⚠️ Counselor has no appointments (Unexpected)');
-        } catch (error) {
-            console.error('❌ Get Counselor Appointments Failed:', error.response?.data?.message || error.message);
-        }
-
-        // 9. Update Appointment Status (Counselor)
-        try {
-            const res = await axios.patch(
-                `${API_URL}/appointment/${appointmentId}/status`,
-                { status: 'approved' },
-                { headers: { Authorization: `Bearer ${counselorToken}` } }
-            );
-            if (res.data.status === 'approved') console.log('✅ Update Appointment Status Passed');
-        } catch (error) {
-            console.error('❌ Update Appointment Status Failed:', error.response?.data?.message || error.message);
-        }
-
-        console.log('--- Verification Complete ---');
-    } catch (error) {
-        console.error('Unexpected Error:', error);
-    }
-};
-
-runVerification();
+    console.log(`--- Smoke check: ${BASE} ---`);
+    const health = await call('GET', '/api/health');
+    check(`Health (db: ${health.data?.db})`, health.status === 200);
+    const id = `smoke_${Date.now().toString(36)}`;
+    const pw = 'SmokeTest123';
+    check('Register', (await call('POST', '/api/auth/register', { name: 'Smoke Test', username: id, email: `${id}@example.test`, password: pw, confirmPassword: pw })).status === 201);
+    cookie = '';
+    check('Login with username', (await call('POST', '/api/auth/login', { identifier: id, password: pw })).status === 200);
+    check('Current user', (await call('GET', '/api/auth/me')).data?.data?.username === id);
+    check('Admin API forbidden for users', (await call('GET', '/api/admin/users')).status === 403);
+    check('Victim support consent status', (await call('GET', '/api/victim-support/consent')).status === 200);
+    check('Logout', (await call('POST', '/api/auth/logout', {})).status === 200);
+    check('Session cleared', (await call('GET', '/api/auth/me')).status === 401);
+})().catch((e) => { console.error('Smoke check failed:', e.message); process.exit(1); });

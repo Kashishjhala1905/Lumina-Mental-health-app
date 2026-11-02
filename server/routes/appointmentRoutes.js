@@ -8,9 +8,9 @@ const {
 } = require('../controllers/appointmentController');
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 
-// Student routes
-router.post('/book', protect, restrictTo('student'), bookAppointment);
-router.get('/my', protect, restrictTo('student'), getMyAppointments);
+// User routes (`user` also matches legacy `student` accounts)
+router.post('/book', protect, restrictTo('user'), bookAppointment);
+router.get('/my', protect, restrictTo('user'), getMyAppointments);
 
 // Counselor routes
 router.get('/counselor', protect, restrictTo('counselor'), getCounselorAppointments);

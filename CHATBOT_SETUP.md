@@ -1,13 +1,13 @@
 # 🤖 AI Chatbot Setup Guide
 
 ## Overview
-The chatbot now uses **Groq API** - a free, fast, and high-quality AI service that works exactly like OpenAI/Claude. It uses the Llama 3.1 70B model which provides excellent conversational responses.
+The chatbot now uses **Groq API** - a free, fast, and high-quality AI service that works exactly like OpenAI/Claude. It uses the model set in `GROQ_MODEL` (default `openai/gpt-oss-120b`; the original `llama-3.3-70b-versatile` has been retired by Groq).
 
 ## ✅ Why Groq?
 - **100% Free** - Generous free tier, no credit card required
 - **Super Fast** - GPU-accelerated responses (often < 1 second)
 - **OpenAI-Compatible** - Same API structure as OpenAI
-- **High Quality** - Uses Llama 3.1 70B model
+- **High Quality** - Configurable model via `GROQ_MODEL` (default openai/gpt-oss-120b)
 - **No Rate Limits** - Generous free tier limits
 
 ## 🚀 Setup Instructions
